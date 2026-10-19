@@ -1,0 +1,65 @@
+format_version = 6
+id = "wcw.enhancement.smooth-motion"
+version = "1.0.0"
+name = "WCW Mayhem Smooth Motion"
+author = "WCWMayhemRecomp"
+description = "Blends the game's 25 fps frames for display at your monitor's refresh rate. The game itself still runs at its original 25 fps (PAL), so fast moves show some ghosting."
+resolver = "declarative"
+save_compatibility = "shared"
+
+[[target]]
+game_id = "SLES-02193"
+
+[[feature]]
+id = "smooth-motion"
+name = "Smooth motion (frame blending)"
+description = "Crossfades between the game's own frames at the display rate. It does not create new in-between poses: the game logic and animation stay at 25 fps. OpenGL only; turns vsync off and paces itself."
+group = "Visual"
+channel = "experimental"
+default_enabled = false
+
+[[option]]
+feature = "smooth-motion"
+id = "rate"
+label = "Output rate"
+description = "Display follows the monitor's refresh rate."
+group = "Visual"
+type = "choice"
+default = "display"
+
+[[option.choice]]
+value = "display"
+label = "Match display"
+
+[[option.choice]]
+value = "60"
+label = "60 Hz"
+
+[[option.choice]]
+value = "120"
+label = "120 Hz"
+
+[[option.choice]]
+value = "144"
+label = "144 Hz"
+
+[[option]]
+feature = "smooth-motion"
+id = "blend"
+label = "Blend"
+description = "Motion-adaptive cuts cleanly on big changes to reduce double images; Linear always crossfades."
+group = "Visual"
+type = "choice"
+default = "motion-adaptive"
+
+[[option.choice]]
+value = "motion-adaptive"
+label = "Motion-adaptive"
+
+[[option.choice]]
+value = "linear"
+label = "Linear"
+
+[[plugin]]
+feature = "smooth-motion"
+id = "wcw.smooth-motion"

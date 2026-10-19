@@ -1,0 +1,7 @@
+* text=auto
+# The psxrecomp patches apply to LF sources: keep them byte-for-byte.
+*.patch -text
+*.png binary
+*.ico binary
+*.cmd text eol=crlf
+*.ps1 text eol=crlf

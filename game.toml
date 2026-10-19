@@ -1,0 +1,85 @@
+# WCW Mayhem (PAL, SLES-02193) on psxrecomp. Started from
+# tools/new_project_layout/probe_disc.py's output for the Redump dump below.
+
+[game]
+name = "WCWMayhem"
+id = "SLES-02193"
+players = 4
+# Extracted from your disc by `build.cmd <cue>` (psxrecomp_cli.py generate).
+exe = "disc/SLES_021.93"
+# Players pick their disc in the launcher, which passes --disc to the game.
+disc = "disc/WCW Mayhem (Europe).cue"
+load_address = "0x80010000"
+entry_pc = "0x80057548"
+text_size = "0x000ED800"
+stack_base = "0x801FFFF0"
+
+# Digests are for data Track 01 (first BINARY FILE / TRACK 01).
+[prepare_disc]
+out_dir = "disc"
+bin_name = "WCW Mayhem (Europe).bin"
+cue_name = "WCW Mayhem (Europe).cue"
+boot_exe = "SLES_021.93"
+known_sizes = [728503776]
+known_md5 = [
+  "f05d7e5edad41f89e3c679dad83ea5f2",
+]
+known_sha1 = [
+  "b423610aaf79b158bd71ec189e61016fff4d4bc8",
+]
+known_crc32 = [
+  "db628cdb",
+]
+
+[recompiler]
+seeds = "seeds/ghidra_funcs.txt"
+out_dir = "generated"
+strict = true
+
+[runtime]
+window_title = "WCW Mayhem Recompiled"
+memcard_dir = "saves"
+overlay_cache = true
+
+[video]
+renderer = "opengl"
+aspect_ratio = "4:3"
+# 1440p internal resolution (6x of 240 lines; area-resolved to the window).
+internal_resolution = "1440p"
+# PGXP (anti-wobble) is switched by the psx.enhancement.pgxp mod, on by default
+# (mods/preloaded override). Hook-flavor settings from ENHANCEMENTS.md G1.11:
+# exact projection, dataflow only, no half-pixel clamp.
+pgxp_mod_only = true
+pgxp_tolerance = -1.0
+pgxp_position_fallback = false
+pgxp_preserve_projection = true
+
+[controller]
+default_mode = "digital"
+# Player 1 uses the first connected game controller (Xbox/XInput pads via SDL).
+# Release builds otherwise default P1 to the keyboard. The launcher's Controls
+# section overrides this per player in settings.toml (p1_device..p4_device).
+p1_device = "gamepad"
+
+# Online mount gate: digests + track count + optional TOC fingerprint
+# (see docs/NETPLAY.md).
+[netplay]
+require_cue = true
+required_tracks = 1
+required_disc_fp = "8c2a5ef8c0422d36fb49899e896ac18bea4efb9113692536fa5b2c4765ea8645"
+
+# Widescreen (activated by the wcw.enhancement.widescreen mod package).
+[widescreen]
+# Frames with GTE 3D activity are gameplay: they render native-wide.
+gte_game_mode = true
+
+# Object on-screen test func_80047BB4 (props: ring posts, turnbuckles, steps,
+# barriers): an object is skipped unless one projected vertex has |SX| < 256
+# (the 512-wide 4:3 screen). Widen both X limits by the live margin.
+[[widescreen.signed_x_bound]]
+address = "0x80047BC0"
+expected = "0x240B0100" # addiu t3,zero,256    (sltu sx,t3: right edge)
+
+[[widescreen.signed_x_bound]]
+address = "0x80047BC4"
+expected = "0x340AFF00" # ori t2,zero,0xFF00   (sltu t2,sx: left edge, -256 as u16)

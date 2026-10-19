@@ -1,0 +1,31 @@
+<!-- Alternative accent: the cover art's orange/gold light streaks. To use it, change the one
+     ResourceInclude line in App.axaml from AccentPurple.axaml to AccentGold.axaml. Same keys
+     as AccentPurple.axaml; text on the accent turns dark because gold is light. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Color x:Key="AccentColor">#F29B1F</Color>
+  <Color x:Key="AccentStartColor">#E8761A</Color>
+  <Color x:Key="AccentEndColor">#F8BC34</Color>
+  <Color x:Key="AccentHoverStartColor">#F08A2A</Color>
+  <Color x:Key="AccentHoverEndColor">#FFCB55</Color>
+  <Color x:Key="AccentPressedColor">#C9620F</Color>
+  <Color x:Key="AccentSoftColor">#FFC873</Color>
+  <Color x:Key="AccentTintColor">#3DF29B1F</Color>
+  <Color x:Key="OnAccentColor">#140C02</Color>
+
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentSoftBrush" Color="{StaticResource AccentSoftColor}" />
+  <SolidColorBrush x:Key="AccentTintBrush" Color="{StaticResource AccentTintColor}" />
+  <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
+  <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
+  <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="{StaticResource AccentStartColor}" />
+    <GradientStop Offset="1" Color="{StaticResource AccentEndColor}" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="AccentHoverGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="{StaticResource AccentHoverStartColor}" />
+    <GradientStop Offset="1" Color="{StaticResource AccentHoverEndColor}" />
+  </LinearGradientBrush>
+  <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{StaticResource AccentEndColor}" />
+  <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="#00000000" />
+</ResourceDictionary>

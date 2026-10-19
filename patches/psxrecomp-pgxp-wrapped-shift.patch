@@ -1,0 +1,24 @@
+diff --git a/runtime/src/pgxp.cpp b/runtime/src/pgxp.cpp
+index 784d9e55..76103925 100644
+--- a/runtime/src/pgxp.cpp
++++ b/runtime/src/pgxp.cpp
+@@ -1006,7 +1006,18 @@ static int alu_scalar(uint32_t instr, uint32_t result, uint32_t s1, uint32_t s2,
+             const int logical = (funct & 3u) == 2;
+             if (left) {
+                 const int64_t exact = (int64_t)(int32_t)s1 * ((int64_t)1 << sh);
+-                if (exact != (int64_t)(int32_t)result) return 0;   /* wrapped     */
++                const int64_t wrap = exact - (int64_t)(int32_t)result;
++                if (wrap != 0) {
++                    /* Only the sign-extension idiom may wrap: a zero-extended
++                     * half (LHU) shifted into the top of the word, as in
++                     * `lhu; sll 16; sra 16+n` (WCW Mayhem's subdivided mesh
++                     * midpoints, 0x80046D0C). The guest result is exact modulo
++                     * 2^32, so drop the same whole 2^32 steps from the precise
++                     * value: it stays the guest integer plus its fraction. */
++                    if ((uint32_t)s1 > 0xFFFFu || sh < 16) return 0;
++                    *out = std::ldexp(a, (int)sh) - (double)wrap;
++                    return 1;
++                }
+                 *out = std::ldexp(a, (int)sh);
+                 return 1;
+             }

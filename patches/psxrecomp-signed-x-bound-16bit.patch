@@ -1,0 +1,53 @@
+diff --git a/docs/config_schema.md b/docs/config_schema.md
+index dbae78b3..5d23d806 100644
+--- a/docs/config_schema.md
++++ b/docs/config_schema.md
+@@ -347,6 +347,9 @@ expected = "0x2402FF00" # addiu v0,zero,-256
+ - `ADDIU rt,zero,imm` and `ORI rt,zero,imm` sites are screen-pixel bounds and
+   move by the live horizontal margin. ADDIU sign-extends the constant; ORI
+   zero-extends it. The destination and immediate must both be nonzero.
++  An ORI constant with bit 15 set is a negative bound held as a 16-bit half
++  for an unsigned compare against a zero-extended screen X (`ori t2,zero,
++  0xFF00; sltu v0,t2,sx`): it moves as int16 by `-margin` and stays 16 bits.
+ - Site identity is the normalized physical address plus the complete
+   instruction word. The helper is identity at 4:3.
+ 
+diff --git a/recompiler/src/code_generator.cpp b/recompiler/src/code_generator.cpp
+index 0baaf4aa..2cd712ff 100644
+--- a/recompiler/src/code_generator.cpp
++++ b/recompiler/src/code_generator.cpp
+@@ -1028,6 +1028,17 @@ std::string CodeGenerator::translate_instruction_core(uint32_t addr, uint32_t in
+         }
+         if ((bound_opcode == 0x09u || bound_opcode == 0x0Du) &&
+             get_rs(instr) == 0u && get_rt(instr) != 0u) {
++            // ORI with bit 15 set is a negative screen-X bound held as a
++            // 16-bit half for an unsigned compare against a zero-extended SX
++            // (`ori t2,zero,0xFF00; sltu v0,t2,sx` == "sx < -256", WCW
++            // Mayhem's object on-screen test at 0x80047BC4). No screen-pixel
++            // bound reaches 0x8000, so move it as int16 and keep 16 bits.
++            if (bound_opcode == 0x0Du && (instr & 0x8000u) != 0u) {
++                return fmt::format("{} = (uint32_t)psx_ws_screen_x_bound({}) & 0xFFFFu;"
++                                   "  /* typed native-wide 16-bit screen-X bound */{}",
++                                   reg_name(get_rt(instr)),
++                                   (int32_t)(int16_t)(instr & 0xFFFFu), comment);
++            }
+             // ADDIU sign-extends, ORI zero-extends its screen-pixel constant.
+             const int32_t vanilla = bound_opcode == 0x09u
+                 ? (int16_t)(instr & 0xFFFFu) : (int32_t)(instr & 0xFFFFu);
+diff --git a/runtime/src/dirty_ram_interp.c b/runtime/src/dirty_ram_interp.c
+index d3e655dc..38481905 100644
+--- a/runtime/src/dirty_ram_interp.c
++++ b/runtime/src/dirty_ram_interp.c
+@@ -2208,7 +2208,11 @@ static int exec_one_fetched_inner(CPUState *cpu, uint32_t pc, uint32_t insn,
+     case 0x0D: { /* ORI */
+         uint32_t a = cpu->gpr[rs];
+         if (rs == 0 && rt != 0 && psx_ws_is_signed_x_bound_site(pc, insn))
+-            cpu->gpr[rt] = (uint32_t)psx_ws_screen_x_bound((int32_t)imm);
++            /* Bit 15 set: a negative bound kept as a 16-bit half for an
++             * unsigned SX compare (matches the native emit). */
++            cpu->gpr[rt] = (imm & 0x8000u)
++                ? ((uint32_t)psx_ws_screen_x_bound((int32_t)(int16_t)imm) & 0xFFFFu)
++                : (uint32_t)psx_ws_screen_x_bound((int32_t)imm);
+         else
+             cpu->gpr[rt] = a | imm;
+         psx_pgxp_alu(cpu, insn, cpu->gpr[rt], a, imm);

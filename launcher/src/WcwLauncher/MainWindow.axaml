@@ -1,0 +1,640 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="WcwLauncher.MainWindow"
+        Title="WCW Mayhem Recomp"
+        Icon="/Assets/launcher.ico"
+        Width="1100" Height="640" MinWidth="900" MinHeight="580"
+        WindowStartupLocation="CenterScreen"
+        Background="#07060D"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1">
+  <Grid ColumnDefinitions="84,*" RowDefinitions="36,*">
+
+    <!-- Backdrop without art: navy to black with an accent glow. -->
+    <Panel Grid.ColumnSpan="2" Grid.RowSpan="2">
+      <Panel.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+          <GradientStop Offset="0" Color="#16122A" />
+          <GradientStop Offset="0.6" Color="#0B0916" />
+          <GradientStop Offset="1" Color="#060509" />
+        </LinearGradientBrush>
+      </Panel.Background>
+    </Panel>
+    <Panel Grid.ColumnSpan="2" Grid.RowSpan="2" Opacity="0.45" IsHitTestVisible="False">
+      <Panel.Background>
+        <RadialGradientBrush Center="70%,30%" GradientOrigin="70%,30%" RadiusX="60%" RadiusY="75%">
+          <GradientStop Offset="0" Color="{DynamicResource AccentStartColor}" />
+          <GradientStop Offset="1" Color="#00000000" />
+        </RadialGradientBrush>
+      </Panel.Background>
+    </Panel>
+
+    <!-- art\background.png fills the window (sized and anchored in code), drifting slowly. -->
+    <Canvas x:Name="BackgroundLayer" Grid.ColumnSpan="2" Grid.RowSpan="2" ClipToBounds="True" IsVisible="False">
+      <Image x:Name="BackgroundImage" Stretch="Fill" RenderTransformOrigin="50%,62%"
+             RenderOptions.BitmapInterpolationMode="HighQuality">
+        <Image.RenderTransform>
+          <TransformGroup>
+            <ScaleTransform />
+            <TranslateTransform />
+          </TransformGroup>
+        </Image.RenderTransform>
+      </Image>
+    </Canvas>
+
+    <!-- Scrims: black to transparent behind the title bar, the rail and the dock. -->
+    <Border Grid.ColumnSpan="2" Grid.RowSpan="2" Height="84" VerticalAlignment="Top" IsHitTestVisible="False">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+          <GradientStop Offset="0" Color="#B3000000" />
+          <GradientStop Offset="1" Color="#00000000" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+    <Border Grid.ColumnSpan="2" Grid.RowSpan="2" Height="150" VerticalAlignment="Bottom" IsHitTestVisible="False">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+          <GradientStop Offset="0" Color="#00000000" />
+          <GradientStop Offset="0.5" Color="#8C000000" />
+          <GradientStop Offset="1" Color="#F2040309" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+    <Border Grid.ColumnSpan="2" Grid.RowSpan="2" Width="300" HorizontalAlignment="Left" IsHitTestVisible="False">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+          <GradientStop Offset="0" Color="#A6000000" />
+          <GradientStop Offset="1" Color="#00000000" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
+
+    <!-- Home. -->
+    <Grid x:Name="HomePage" Grid.Row="1" Grid.Column="1">
+      <!-- Typed title, only when there is no art (the cover carries the game's own logo). -->
+      <StackPanel x:Name="TitleWordmark" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="56,0,0,96">
+        <StackPanel.Effect>
+          <DropShadowEffect BlurRadius="26" OffsetX="0" OffsetY="6" Color="Black" Opacity="0.7" />
+        </StackPanel.Effect>
+        <TextBlock Text="WCW" FontSize="104" FontWeight="Black" FontStyle="Italic" LetterSpacing="-2"
+                   Foreground="{StaticResource SteelBrush}" Margin="-6,0,0,-30" />
+        <TextBlock Text="MAYHEM" FontSize="104" FontWeight="Black" FontStyle="Italic" LetterSpacing="-2"
+                   Foreground="{DynamicResource AccentGradientBrush}" Margin="-6,0,0,0" />
+        <TextBlock Text="RECOMPILED FOR PC" FontSize="13" FontWeight="Bold" LetterSpacing="7"
+                   Foreground="{StaticResource SilverBrush}" Margin="2,2,0,0" />
+      </StackPanel>
+      <!-- Optional art\logo.png. -->
+      <Image x:Name="LogoImage" MaxWidth="520" MaxHeight="260" HorizontalAlignment="Center" VerticalAlignment="Center"
+             Margin="0,0,0,110" IsVisible="False" Stretch="Uniform" RenderOptions.BitmapInterpolationMode="HighQuality">
+        <Image.Effect>
+          <DropShadowEffect BlurRadius="28" OffsetX="0" OffsetY="6" Color="Black" Opacity="0.7" />
+        </Image.Effect>
+      </Image>
+
+      <!-- The dock: PLAY, then what the launcher knows, then what's switched on. -->
+      <Grid VerticalAlignment="Bottom" Margin="26,0,26,20" ColumnDefinitions="Auto,*,Auto">
+        <Border Grid.Column="0" CornerRadius="30" BoxShadow="0 10 30 0 #B0000000" VerticalAlignment="Center">
+          <Button Classes="play" x:Name="PlayButton">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Path x:Name="PlayIcon" Data="M0,0 L15,9 L0,18 Z" VerticalAlignment="Center"
+                    Fill="{Binding $parent[Button].Foreground}" />
+              <TextBlock x:Name="PlayLabel" Text="PLAY" VerticalAlignment="Center" LetterSpacing="1.5" />
+            </StackPanel>
+          </Button>
+        </Border>
+        <Border Grid.Column="1" Classes="glass" Margin="16,0,12,0" Padding="18,9" VerticalAlignment="Center"
+                HorizontalAlignment="Left">
+          <StackPanel Spacing="4">
+            <TextBlock Text="WCW MAYHEM  ·  RECOMPILED FOR PC" FontSize="10.5" FontWeight="Bold" LetterSpacing="2.5"
+                       Foreground="{DynamicResource AccentSoftBrush}" />
+            <StackPanel Orientation="Horizontal" Spacing="9">
+              <Ellipse x:Name="StatusDot" Width="9" Height="9" Fill="#3BD16F" VerticalAlignment="Center" />
+              <TextBlock x:Name="StatusText" Text="Checking…" FontSize="13" Foreground="#ECEAF3"
+                         VerticalAlignment="Center" MaxWidth="470" TextTrimming="CharacterEllipsis" />
+              <Button x:Name="StatusAction" Classes="ghost" IsVisible="False" Padding="10,3" FontSize="11" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+        <StackPanel Grid.Column="2" x:Name="ChipsPanel" Orientation="Horizontal" VerticalAlignment="Center" />
+      </Grid>
+    </Grid>
+
+    <!-- Settings: a full page with tabs, on a dark backing so the art stays out of the way. -->
+    <Grid x:Name="SettingsPage" Grid.Row="1" Grid.Column="1" IsVisible="False" Background="{StaticResource PageBrush}"
+          RowDefinitions="Auto,Auto,*,Auto">
+      <StackPanel Grid.Row="0" Margin="36,12,36,0">
+        <TextBlock Text="Settings" FontSize="26" FontWeight="Bold" Foreground="White" />
+        <TextBlock Classes="hint"
+                   Text="Saved to settings.toml and mods\state.toml next to the game, which reads them. Applied the next time the game starts." />
+      </StackPanel>
+      <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="4" Margin="30,12,36,10">
+        <Button Classes="tab" x:Name="TabDisplay" Content="Display" />
+        <Button Classes="tab" x:Name="TabEnhancements" Content="Enhancements" />
+        <Button Classes="tab" x:Name="TabControls" Content="Controls" />
+        <Button Classes="tab" x:Name="TabAudio" Content="Audio" />
+        <Button Classes="tab" x:Name="TabGameFiles" Content="Game files" />
+      </StackPanel>
+      <Border Grid.Row="2" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Margin="36,0" />
+      <ScrollViewer Grid.Row="2" x:Name="SettingsScroll" Margin="36,1,12,0" VerticalScrollBarVisibility="Auto">
+        <Panel Margin="0,0,24,18">
+
+          <!-- Display. -->
+          <StackPanel x:Name="DisplayTab">
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Internal resolution" />
+                  <TextBlock Classes="hint" x:Name="ResolutionHint" />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="ResolutionBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Renderer" />
+                  <TextBlock Classes="hint" x:Name="RendererHint" />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="RendererBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Start in fullscreen" />
+                  <TextBlock Classes="hint" Text="Borderless, at your desktop resolution. Alt+Enter switches while playing." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="FullscreenToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Vertical sync" />
+                  <TextBlock Classes="hint" Text="Tear-free presentation when your display can follow the game's 50 Hz PAL timing." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="VsyncToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Window size" />
+                  <TextBlock Classes="hint" Text="When not fullscreen. The height follows the picture's shape." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="WindowSizeBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Texture filtering" />
+                  <TextBlock Classes="hint" Text="Off keeps the console's sharp texels." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="TextureBox" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                  <ComboBoxItem Content="Off  (as on the console)" />
+                  <ComboBoxItem Content="Bilinear  (smoothed)" />
+                </ComboBox>
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Antialiasing (smooth scaling)" />
+                  <TextBlock Classes="hint" Text="Filters the picture as it is scaled to your window, movies included. Off keeps hard pixel edges." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="AntialiasingToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="CRT colour filter" />
+                  <TextBlock Classes="hint" Text="A model of how a CRT television showed the colours." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="CrtBox" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                  <ComboBoxItem Content="Off  (the game's own colours)" />
+                  <ComboBoxItem Content="CRT" />
+                  <ComboBoxItem Content="Composite" />
+                  <ComboBoxItem Content="Trinitron" />
+                </ComboBox>
+              </Grid>
+            </Border>
+            <Border Classes="row" BorderThickness="0">
+              <Grid ColumnDefinitions="*,Auto,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Scanlines" />
+                  <TextBlock Classes="hint" Text="Dark gaps between the lines, like a CRT." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="ScanlineStrengthBox" Width="130" Margin="0,0,14,0" VerticalAlignment="Center">
+                  <ComboBoxItem Content="Light" />
+                  <ComboBoxItem Content="Medium" />
+                  <ComboBoxItem Content="Strong" />
+                </ComboBox>
+                <ToggleSwitch Grid.Column="2" x:Name="ScanlinesToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+          </StackPanel>
+
+          <!-- Enhancements. -->
+          <StackPanel x:Name="EnhancementsTab" IsVisible="False">
+            <TextBlock Classes="section" Text="WIDESCREEN" Margin="0,14,0,2" />
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Widescreen" />
+                  <TextBlock Classes="hint" x:Name="WidescreenHint"
+                             Text="A genuinely wider view of the arena, not a stretched picture. Menus, movies and other full-screen 2D keep their 4:3 framing. Marked experimental by the recomp." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="WidescreenToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Aspect ratio" />
+                  <TextBlock Classes="hint" Text="16:9 is the validated target." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="AspectBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+
+            <TextBlock Classes="section" Text="FRAME RATE" />
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Smooth motion (frame blending)" />
+                  <TextBlock Classes="hint" x:Name="SmoothMotionHint"
+                             Text="Crossfades the game's own frames for display at your monitor's rate. It adds no new animation: WCW Mayhem's logic and animation still run at a fixed 25 fps (PAL), so fast moves show some ghosting. Switches the game to OpenGL with vsync off. Marked experimental by the recomp." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="SmoothMotionToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Output rate" />
+                  <TextBlock Classes="hint" Text="How often a blended frame is shown." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="SmoothRateBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Blend" />
+                  <TextBlock Classes="hint" x:Name="SmoothBlendHint" />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="SmoothBlendBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+
+            <TextBlock Classes="section" Text="PRECISION, LOADING AND STARTUP" />
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="PGXP precision" />
+                  <TextBlock Classes="hint" x:Name="PgxpHint"
+                             Text="Stops 3D models wobbling between pixels and big floor and wall textures warping. Visual only; needs an internal resolution above Native." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="PgxpToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" TextWrapping="Wrap"
+                             Text="CD speed (the emulated drive; the game itself still runs at normal speed)" />
+                  <TextBlock Classes="hint" x:Name="CdSpeedHint" Text="If a load ever stalls, lower it." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="CdSpeedBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row" BorderThickness="0">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Fast boot" />
+                  <TextBlock Classes="hint" Text="Skips the PlayStation startup screen and goes straight to the disc." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="FastBootToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+
+            <TextBlock Classes="section" Text="GAMEPLAY" />
+            <Border Classes="row" BorderThickness="0">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" TextWrapping="Wrap"
+                             Text="Unlock all: every hidden wrestler, doppelganger select and the classic Nitro setting" />
+                  <TextBlock Classes="hint" x:Name="UnlockAllHint"
+                             Text="Same as the PPV passwords PLYHDNGYS, DPLGNGRS and PLYNTRCLSC, applied every session. Your memory card is not changed." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="UnlockAllToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+          </StackPanel>
+
+          <!-- Controls. -->
+          <Grid x:Name="ControlsTab" IsVisible="False" ColumnDefinitions="*,22,330">
+            <StackPanel Grid.Column="0">
+              <Border Classes="card" Padding="16,12" Margin="0,14,0,4">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Viewbox Width="30" Height="30" VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                      <Path Stroke="{DynamicResource AccentSoftBrush}" StrokeThickness="1.7" StrokeLineCap="Round" StrokeJoin="Round"
+                            Data="M7.5,8 H16.5 C19.5,8 21,10 21.6,13.5 C22.2,17 20.6,19 18.6,18 L16.2,15.8 H7.8 L5.4,18 C3.4,19 1.8,17 2.4,13.5 C3,10 4.5,8 7.5,8 Z M7,11 V14 M5.5,12.5 H8.5 M16,11.5 L16.05,11.5 M18,13.5 L18.05,13.5" />
+                    </Canvas>
+                  </Viewbox>
+                  <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Ellipse x:Name="PadsDot" Width="8" Height="8" Fill="#3BD16F" VerticalAlignment="Center" />
+                      <TextBlock x:Name="PadsText" Classes="label" Text="Looking for controllers…" />
+                    </StackPanel>
+                    <TextBlock x:Name="PadsHint" Classes="hint" />
+                  </StackPanel>
+                </Grid>
+              </Border>
+
+              <TextBlock Classes="section" Text="PLAYERS" Margin="0,12,0,0" />
+              <Border Classes="row">
+                <Grid ColumnDefinitions="*,210">
+                  <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Player 1" />
+                    <TextBlock Classes="hint" x:Name="PlayerHint1" />
+                  </StackPanel>
+                  <ComboBox Grid.Column="1" x:Name="PlayerBox1" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <Border Classes="row">
+                <Grid ColumnDefinitions="*,210">
+                  <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Player 2" />
+                    <TextBlock Classes="hint" x:Name="PlayerHint2" />
+                  </StackPanel>
+                  <ComboBox Grid.Column="1" x:Name="PlayerBox2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <Border Classes="row">
+                <Grid ColumnDefinitions="*,210">
+                  <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Player 3" />
+                    <TextBlock Classes="hint" x:Name="PlayerHint3" />
+                  </StackPanel>
+                  <ComboBox Grid.Column="1" x:Name="PlayerBox3" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <Border Classes="row">
+                <Grid ColumnDefinitions="*,210">
+                  <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Player 4" />
+                    <TextBlock Classes="hint" x:Name="PlayerHint4" />
+                  </StackPanel>
+                  <ComboBox Grid.Column="1" x:Name="PlayerBox4" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <TextBlock x:Name="MultitapHint" Classes="hint" Margin="0,8,0,0" />
+              <TextBlock x:Name="MultitapWarning" Classes="warn" Margin="0,4,0,0" IsVisible="False" />
+
+              <TextBlock Classes="section" Text="PAD" />
+              <Border Classes="row">
+                <Grid ColumnDefinitions="*,250">
+                  <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Controller type" />
+                    <TextBlock Classes="hint" Text="What the game is told is plugged in, for every player." />
+                  </StackPanel>
+                  <ComboBox Grid.Column="1" x:Name="PadTypeBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <Border Classes="row" BorderThickness="0">
+                <Grid ColumnDefinitions="*,250">
+                  <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+                    <TextBlock Classes="label" Text="Stick deadzone" />
+                    <TextBlock Classes="hint" Text="How far a stick moves before it counts. Raise it if a worn stick drifts." />
+                  </StackPanel>
+                  <ComboBox Grid.Column="1" x:Name="DeadzoneBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+            </StackPanel>
+
+            <Border Grid.Column="2" Classes="card" Padding="16,12,16,10" Margin="0,14,0,0" VerticalAlignment="Top">
+              <StackPanel>
+                <TextBlock Classes="section" Text="BUTTON LAYOUT" Margin="0,0,0,8" />
+                <Grid x:Name="ButtonLayoutGrid" ColumnDefinitions="*,*" />
+                <TextBlock x:Name="MoveHint" Classes="hint" Margin="0,8,0,0" />
+                <Button Classes="link" x:Name="EditInputIniButton" Content="Edit button mapping  (input.ini)" Margin="0,6,0,0" />
+                <Button Classes="link" x:Name="EditKeybindsButton" Content="Edit keyboard keys  (keybinds.ini)" />
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <!-- Audio. -->
+          <StackPanel x:Name="AudioTab" IsVisible="False">
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="High-quality audio" />
+                  <TextBlock Classes="hint" Text="Re-renders the sound chip's output with smoother resampling and more headroom. Off is the console's exact mix." />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="SpuHqToggle" OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row" BorderThickness="0">
+              <Grid ColumnDefinitions="*,290">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Output sample rate" />
+                  <TextBlock Classes="hint" Text="44.1 kHz is the console's own rate." />
+                </StackPanel>
+                <ComboBox Grid.Column="1" x:Name="FrequencyBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+          </StackPanel>
+
+          <!-- Game files. -->
+          <StackPanel x:Name="GameFilesTab" IsVisible="False">
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Game disc" />
+                  <TextBlock x:Name="DiscText" Classes="hint" Foreground="{StaticResource TextBrush}" />
+                  <TextBlock x:Name="DiscStatusText" Classes="hint" />
+                </StackPanel>
+                <Button Grid.Column="1" x:Name="ChooseDiscButton" Classes="ghost" Content="Choose .cue…" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Game folder" />
+                  <TextBlock x:Name="GameFolderText" Classes="hint" />
+                </StackPanel>
+                <Button Grid.Column="1" x:Name="OpenGameFolderButton" Classes="ghost" Content="Open folder" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <Border Classes="row">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Button mapping" />
+                  <TextBlock Classes="hint" Text="input.ini (controllers) and keybinds.ini (keyboard), next to the game." />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                  <Button x:Name="OpenInputIniButton" Classes="ghost" Content="input.ini" />
+                  <Button x:Name="OpenKeybindsButton" Classes="ghost" Content="keybinds.ini" />
+                </StackPanel>
+              </Grid>
+            </Border>
+            <Border Classes="row" BorderThickness="0">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Margin="0,0,28,0" VerticalAlignment="Center">
+                  <TextBlock Classes="label" Text="Logs" />
+                  <TextBlock x:Name="LogsFolderText" Classes="hint" />
+                </StackPanel>
+                <Button Grid.Column="1" x:Name="OpenLogsButton" Classes="ghost" Content="Open logs" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+          </StackPanel>
+        </Panel>
+      </ScrollViewer>
+      <Border Grid.Row="3" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Padding="36,11">
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <TextBlock x:Name="SettingsWarning" Classes="warn" VerticalAlignment="Center" Margin="0,0,16,0" IsVisible="False" />
+          <Button Grid.Column="1" x:Name="CancelSettingsButton" Classes="ghost" Content="Cancel" Padding="22,8" Margin="0,0,10,0" />
+          <Button Grid.Column="2" x:Name="SaveSettingsButton" Classes="primary" Content="Save" />
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- About. -->
+    <Grid x:Name="AboutPage" Grid.Row="1" Grid.Column="1" IsVisible="False" Background="{StaticResource PageBrush}">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,12,36,24" MaxWidth="680" HorizontalAlignment="Left" Spacing="10">
+          <TextBlock Text="About" FontSize="26" FontWeight="Bold" Foreground="White" />
+          <TextBlock x:Name="VersionText" Classes="hint" />
+          <TextBlock Classes="label" TextWrapping="Wrap" FontWeight="Normal"
+                     Text="An unofficial fan project that runs a static recompilation of WCW Mayhem (PlayStation, 1999) on PC. It is not affiliated with or endorsed by WWE, Electronic Arts, Kodiak Interactive, Sony or any other rights holder." />
+          <TextBlock Classes="label" TextWrapping="Wrap" FontWeight="Normal"
+                     Text="No game data is included. You need your own copy of the game; the launcher only reads the disc image you choose and never changes it." />
+          <TextBlock Classes="section" Text="BUILT WITH" />
+          <TextBlock Classes="hint" FontSize="12.5"
+                     Text="psxrecomp (PolyForm Noncommercial 1.0.0) · OpenBIOS (MIT) · SDL (zlib) · Avalonia UI (MIT) · Inter typeface (SIL Open Font License 1.1)" />
+          <TextBlock Classes="section" Text="ART" />
+          <TextBlock Classes="hint" FontSize="12.5"
+                     Text="The background is the WCW Mayhem cover art (Electronic Arts, 1999), from art\background.png next to the launcher." />
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+
+    <!-- Navigation rail. -->
+    <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource RailBrush}" BorderBrush="#1AFFFFFF" BorderThickness="0,0,1,0">
+      <Grid RowDefinitions="*,Auto">
+        <StackPanel Spacing="6" Margin="0,10,0,0">
+          <Button Classes="rail" x:Name="NavPlay" ToolTip.Tip="Home">
+            <Grid>
+              <Border Classes="indicator" Width="3" Height="24" CornerRadius="2" HorizontalAlignment="Left"
+                      Background="{DynamicResource AccentGradientBrush}" />
+              <StackPanel VerticalAlignment="Center" Spacing="5">
+                <Viewbox Width="22" Height="22">
+                  <Canvas Width="24" Height="24">
+                    <Path Fill="{Binding $parent[Button].Foreground}" Data="M8,5.5 L18.5,12 L8,18.5 Z" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Text="PLAY" />
+              </StackPanel>
+            </Grid>
+          </Button>
+          <Button Classes="rail" x:Name="NavSettings" ToolTip.Tip="Display, enhancements and audio">
+            <Grid>
+              <Border Classes="indicator" Width="3" Height="24" CornerRadius="2" HorizontalAlignment="Left"
+                      Background="{DynamicResource AccentGradientBrush}" />
+              <StackPanel VerticalAlignment="Center" Spacing="5">
+                <Viewbox Width="22" Height="22">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.8" StrokeLineCap="Round"
+                          Data="M4,7 H11 M15,7 H20 M4,17 H7 M11,17 H20 M13,4.5 V9.5 M9,14.5 V19.5 M4,12 H20" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Text="SETTINGS" />
+              </StackPanel>
+            </Grid>
+          </Button>
+          <Button Classes="rail" x:Name="NavControls" ToolTip.Tip="Controllers and players">
+            <Grid>
+              <Border Classes="indicator" Width="3" Height="24" CornerRadius="2" HorizontalAlignment="Left"
+                      Background="{DynamicResource AccentGradientBrush}" />
+              <StackPanel VerticalAlignment="Center" Spacing="5">
+                <Viewbox Width="22" Height="22">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeJoin="Round"
+                          Data="M7.5,8 H16.5 C19.5,8 21,10 21.6,13.5 C22.2,17 20.6,19 18.6,18 L16.2,15.8 H7.8 L5.4,18 C3.4,19 1.8,17 2.4,13.5 C3,10 4.5,8 7.5,8 Z M7,11 V14 M5.5,12.5 H8.5 M16,11.5 L16.05,11.5 M18,13.5 L18.05,13.5" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Text="CONTROLS" />
+              </StackPanel>
+            </Grid>
+          </Button>
+          <Button Classes="rail" x:Name="NavGameFiles" ToolTip.Tip="Disc image, game folder, mapping files">
+            <Grid>
+              <Border Classes="indicator" Width="3" Height="24" CornerRadius="2" HorizontalAlignment="Left"
+                      Background="{DynamicResource AccentGradientBrush}" />
+              <StackPanel VerticalAlignment="Center" Spacing="5">
+                <Viewbox Width="22" Height="22">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.8"
+                          Data="M12,3 A9,9 0 1 1 11.99,3 Z M12,9.5 A2.5,2.5 0 1 1 11.99,9.5 Z" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Text="GAME FILES" />
+              </StackPanel>
+            </Grid>
+          </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Spacing="6" Margin="0,0,0,12">
+          <Button Classes="rail" x:Name="NavLogs" ToolTip.Tip="Open the logs folder">
+            <Grid>
+              <Border Classes="indicator" Width="3" Height="24" CornerRadius="2" HorizontalAlignment="Left"
+                      Background="{DynamicResource AccentGradientBrush}" />
+              <StackPanel VerticalAlignment="Center" Spacing="5">
+                <Viewbox Width="22" Height="22">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeJoin="Round"
+                          Data="M7,3 H14 L18,7 V21 H7 Z M14,3 V7 H18 M9.5,11 H15.5 M9.5,14.5 H15.5 M9.5,18 H13" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Text="LOGS" />
+              </StackPanel>
+            </Grid>
+          </Button>
+          <Button Classes="rail" x:Name="NavAbout" ToolTip.Tip="About">
+            <Grid>
+              <Border Classes="indicator" Width="3" Height="24" CornerRadius="2" HorizontalAlignment="Left"
+                      Background="{DynamicResource AccentGradientBrush}" />
+              <StackPanel VerticalAlignment="Center" Spacing="5">
+                <Viewbox Width="22" Height="22">
+                  <Canvas Width="24" Height="24">
+                    <Path Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.8" StrokeLineCap="Round"
+                          Data="M12,3 A9,9 0 1 1 11.99,3 Z M12,11 V16.5 M12,7.6 L12,7.7" />
+                  </Canvas>
+                </Viewbox>
+                <TextBlock Text="ABOUT" />
+              </StackPanel>
+            </Grid>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Custom title bar: the strip drags the window; minimise and close on the right. -->
+    <Grid x:Name="TitleBar" Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="Auto,*,Auto,Auto" Background="#01000000">
+      <Image Grid.Column="0" Margin="12,0,0,0" Width="20" Height="20" VerticalAlignment="Center"
+             Source="/Assets/launcher-64.png" RenderOptions.BitmapInterpolationMode="HighQuality" />
+      <TextBlock Grid.Column="1" Margin="10,0" VerticalAlignment="Center"
+                 Text="WCW Mayhem Recomp" FontFamily="Segoe UI, $Default" FontSize="12" Foreground="#D6D6DE" />
+      <Button Grid.Column="2" Classes="chrome" x:Name="MinimizeButton" ToolTip.Tip="Minimise">
+        <Path Data="M0,0 L10,0" Stroke="#D6D6DE" StrokeThickness="1" Width="10" Height="1" />
+      </Button>
+      <Button Grid.Column="3" Classes="chrome close" x:Name="CloseButton" ToolTip.Tip="Close">
+        <Path Data="M0,0 L10,10 M10,0 L0,10" Stroke="#D6D6DE" StrokeThickness="1.2" Width="10" Height="10" />
+      </Button>
+    </Grid>
+  </Grid>
+</Window>

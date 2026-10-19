@@ -1,0 +1,36 @@
+<!-- The launcher's accent: PLAY, Save, toggles, selected tabs and rail items, focus rings,
+     section headers. Blue taken from the Mayhem arena poster's crowd (hue ~215 deg, the
+     poster's median #153463 brightened for buttons). App.axaml includes exactly one accent
+     file; AccentPurple.axaml and AccentGold.axaml are the alternatives. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Color x:Key="AccentColor">#3879D6</Color>
+  <Color x:Key="AccentStartColor">#2561B8</Color>
+  <Color x:Key="AccentEndColor">#4D90F0</Color>
+  <Color x:Key="AccentHoverStartColor">#3976CC</Color>
+  <Color x:Key="AccentHoverEndColor">#6BA8FF</Color>
+  <Color x:Key="AccentPressedColor">#1B4D94</Color>
+  <!-- Accent-tinted text on the dark base (section headers, links). -->
+  <Color x:Key="AccentSoftColor">#ADCFFF</Color>
+  <!-- Translucent accent fill for selected tabs and rail items. -->
+  <Color x:Key="AccentTintColor">#3D3879D6</Color>
+  <!-- Text drawn on the accent itself. -->
+  <Color x:Key="OnAccentColor">#FFFFFF</Color>
+
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentSoftBrush" Color="{StaticResource AccentSoftColor}" />
+  <SolidColorBrush x:Key="AccentTintBrush" Color="{StaticResource AccentTintColor}" />
+  <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
+  <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource OnAccentColor}" />
+  <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="{StaticResource AccentStartColor}" />
+    <GradientStop Offset="1" Color="{StaticResource AccentEndColor}" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="AccentHoverGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="{StaticResource AccentHoverStartColor}" />
+    <GradientStop Offset="1" Color="{StaticResource AccentHoverEndColor}" />
+  </LinearGradientBrush>
+  <!-- Keyboard focus rings (Fluent's focus visual) in the accent. -->
+  <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{StaticResource AccentEndColor}" />
+  <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="#00000000" />
+</ResourceDictionary>

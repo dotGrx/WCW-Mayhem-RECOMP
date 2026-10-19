@@ -1,0 +1,48 @@
+{
+  "format_version": 1,
+  "game": {
+    "name": "WCWMayhem",
+    "id": "SLES-02193",
+    "boot_exe": "SLES_021.93"
+  },
+  "marketing": {
+    "description": "",
+    "publisher": "Electronic Arts",
+    "year": "1999",
+    "region": "Europe",
+    "players": 4
+  },
+  "rom_identity": {
+    "cue_name": "WCW Mayhem (Europe).cue",
+    "bin_name": "WCW Mayhem (Europe).bin",
+    "track_counts": [
+      1
+    ],
+    "require_cue": true,
+    "data_track": {
+      "size": 728503776,
+      "md5": "f05d7e5edad41f89e3c679dad83ea5f2",
+      "sha1": "b423610aaf79b158bd71ec189e61016fff4d4bc8",
+      "crc32": "db628cdb"
+    },
+    "disc_fp": "8c2a5ef8c0422d36fb49899e896ac18bea4efb9113692536fa5b2c4765ea8645"
+  },
+  "exe": {
+    "load_address": "0x80010000",
+    "entry_pc": "0x80057548",
+    "text_size": "0x000ED800",
+    "stack_base": "0x801FFFF0"
+  },
+  "seeds": {
+    "count": 1793,
+    "source": "boot_exe_jal"
+  },
+  "warnings": [
+    "cue has only 1 TRACK \u2014 Track-01-only dumps fail multi-track netplay/catalog gates; prefer a full Redump cue."
+  ],
+  "notes": [
+    "entry_pc/load_address/text_size/stack_base taken from PS-X EXE header.",
+    "seeds are first-pass boot-EXE JAL targets (+ entry); expect to grow as overlays / runtime paths are discovered.",
+    "required_disc_fp is psxrecomp-toc-v1 (matches runtime DiscIdentity)."
+  ]
+}

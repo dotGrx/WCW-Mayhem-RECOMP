@@ -1,0 +1,22 @@
+format_version = 6
+id = "wcw.cheat.unlock-all"
+version = "1.0.0"
+name = "WCW Mayhem Unlock All"
+author = "WCWMayhemRecomp"
+description = "Turns on the game's own Pay-Per-View unlocks every session: all hidden wrestlers, doppelganger select and the classic Nitro setting."
+resolver = "declarative"
+save_compatibility = "shared"
+
+[[target]]
+game_id = "SLES-02193"
+
+[[feature]]
+id = "unlock-all"
+name = "Unlock all"
+description = "Unlocks every hidden wrestler (Ric Flair, Scott Hall, Chris Jericho, Eric Bischoff, Mean Gene and the rest), doppelganger select and the classic Nitro setting, the same as entering the PPV passwords PLYHDNGYS, DPLGNGRS and PLYNTRCLSC. Nothing is written to your memory card; turn it off to go back to normal progression."
+group = "Gameplay"
+default_enabled = false
+
+[[plugin]]
+feature = "unlock-all"
+id = "wcw.unlock-all"

@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- WCW Mayhem Recomp launcher: home screen, settings (settings.toml + mods\state.toml), disc image, logs. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>WcwLauncher</RootNamespace>
+    <AssemblyName>WCWMayhemLauncher</AssemblyName>
+    <AssemblyTitle>WCW Mayhem Recomp launcher</AssemblyTitle>
+    <Version>0.1.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/launcher.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- One self-contained exe next to the game: players need no .NET install. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.15" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.15" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.15" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.15" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets/launcher.ico" />
+    <AvaloniaResource Include="Assets/launcher-64.png" />
+    <None Remove="Assets/icon_master.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Home-screen art (launcher\art\background.png, optional logo.png) is copied loose to
+         dist\art\ at build time, where the launcher looks for it. -->
+    <None Include="..\..\art\*.png;..\..\art\*.jpg;..\..\art\*.jpeg" Link="art\%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
+          ExcludeFromSingleFile="true" />
+  </ItemGroup>
+</Project>

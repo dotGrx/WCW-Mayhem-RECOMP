@@ -1,0 +1,44 @@
+format_version = 6
+id = "wcw.enhancement.widescreen"
+version = "1.0.0"
+name = "WCW Mayhem Widescreen"
+author = "WCWMayhemRecomp"
+description = "Native widescreen: renders a genuinely wider view of the arena instead of stretching the 4:3 picture."
+resolver = "declarative"
+save_compatibility = "shared"
+
+[[target]]
+game_id = "SLES-02193"
+
+[[feature]]
+id = "widescreen"
+name = "Widescreen"
+description = "Widens the 3D view to the selected aspect. Menus, FMV and other full-screen 2D keep their 4:3 framing."
+group = "Visual"
+channel = "experimental"
+default_enabled = true
+
+[[option]]
+feature = "widescreen"
+id = "aspect"
+label = "Aspect ratio"
+description = "16:9 is the validated target; 21:9 and Fit to window are untested."
+group = "Visual"
+type = "choice"
+default = "16:9"
+
+[[option.choice]]
+value = "16:9"
+label = "16:9"
+
+[[option.choice]]
+value = "21:9"
+label = "21:9 (untested)"
+
+[[option.choice]]
+value = "fit"
+label = "Fit to window (untested)"
+
+[[plugin]]
+feature = "widescreen"
+id = "wcw.widescreen"

@@ -1,0 +1,51 @@
+# The psxrecomp framework checkout (scripts\setup-psxrecomp.ps1 clones and patches it).
+/psxrecomp/
+
+# Disc data stays local: your own dump is passed to build.cmd, and nothing from it is committed.
+# disc\ holds the boot EXE generate extracts; generated\ is the game C recompiled from it.
+/disc/
+/generated/
+/analysis/
+*.bin
+*.cue
+*.iso
+*.chd
+*.img
+*.sub
+*.ccd
+SCPH*.BIN
+
+# Build output and framework work areas.
+/build-*/
+/build/
+/out/
+/toolchain/
+/.cache/
+/.psxrecomp_last_generate
+/launcher/dist/
+/launcher/src/WcwLauncher/bin/
+/launcher/src/WcwLauncher/obj/
+
+# Written next to the game or the launcher at runtime: settings, saves, logs, launcher state.
+/saves/
+*.mcd
+*.mcr
+*.pst
+settings.toml
+input.ini
+keybinds.ini
+disc.cfg
+bios.cfg
+launcher.json
+launcher-selftest.txt
+logs/
+psx_last_run_report.json
+psx_freeze_*.json
+overlay_captures.json
+overlay_captures.json.d/
+
+.vs/
+.vscode/
+*.user
+__pycache__/
+*.pyc
